@@ -30,38 +30,36 @@ const lista = (array) => {
     })
     templateLista += `
     </ul>`
-    
+
     return templateLista;
 }
 
-const fetcher = async () => {
-    //endpoint para usuarios
-    app.get('/usuarios', async (req, res) => {
-        //Llamar a api con axios
-        const { data } = await axios.get('https://randomuser.me/api');
-        //Especificar datos requeridos de data (api)
-        const { name: { first, last }, gender } = data.results[0];
-        //Crear variable de id de 6 dígitos con uuid
-        const id = uuidv4().slice(30);
-        //Crear variable de fechas con moment
-        const time = moment().format('MMM Do YYYY, LTS');
-        //Pushear a array users los datos de cada usuario obtenido de data
-        users.push({ first, last, gender, id, time });
-        //Crear variable con usuarios separados por género, usando lodash
-        const usersOrder = _.partition(users, ({ gender }) => gender == 'female');
 
-        //Crear plantilla para insertar función "lista" con usuarios 
-        let template = `
+//endpoint para usuarios
+app.get('/usuarios', async (req, res) => {
+    //Llamar a api con axios
+    const { data } = await axios.get('https://randomuser.me/api');
+    //Especificar datos requeridos de data (api)
+    const { name: { first, last }, gender } = data.results[0];
+    //Crear variable de id de 6 dígitos con uuid
+    const id = uuidv4().slice(30);
+    //Crear variable de fechas con moment
+    const time = moment().format('MMM Do YYYY, LTS');
+    //Pushear a array users los datos de cada usuario obtenido de data
+    users.push({ first, last, gender, id, time });
+    //Crear variable con usuarios separados por género, usando lodash
+    const usersOrder = _.partition(users, ({ gender }) => gender == 'female');
+
+    //Crear plantilla para insertar función "lista" con usuarios 
+    let template = `
         <h4>Total Mujeres ${usersOrder[0].length}</h4>
             ${lista(usersOrder[0])}        
         <h4>Total Hombres ${usersOrder[1].length}</h4>
             ${lista(usersOrder[1])}        
         `
-        //Definir respuesta del servidor, mostrando la plantilla con usuarios
-        res.send(template)
-    })
-}
+    //Definir respuesta del servidor, mostrando la plantilla con usuarios
+    res.send(template)
+})
 
-fetcher()
 
 
